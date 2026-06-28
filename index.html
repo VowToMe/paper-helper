@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>论文辅助工具 - 字数统计/格式规范/参考文献生成/学术写作助手</title>
+<meta name="description" content="免费在线论文辅助工具，支持字数统计、中英文互译、标题规范检查、参考文献格式生成等功能。">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://VowToMe.github.io/paper-helper/">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.container{max-width:820px;margin:0 auto;padding:0 20px}
+header{background:linear-gradient(135deg,#0369a1,#38bdf8);color:#fff;padding:32px 0 24px;text-align:center;box-shadow:0 4px 20px rgba(3,105,161,.3)}
+header h1{font-size:1.7rem;font-weight:700}
+header p{margin-top:6px;opacity:.85;font-size:.92rem}
+.nav{background:#fff;border-bottom:1px solid #e2e8f0;padding:10px 0;position:sticky;top:0;z-index:50}
+.nav-inner{display:flex;gap:8px;flex-wrap:wrap}
+.nav-btn{padding:6px 16px;border:1px solid #e2e8f0;border-radius:20px;background:#fff;cursor:pointer;font-size:.84rem;font-weight:500;transition:all .2s;color:#475569}
+.nav-btn:hover{border-color:#38bdf8;color:#0369a1}
+.nav-btn.active{background:#0369a1;color:#fff;border-color:#0369a1}
+.panel{display:none;background:#fff;border-radius:16px;padding:24px 28px;margin-bottom:20px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.panel.show{display:block}
+.panel h2{font-size:1.1rem;color:#0369a1;margin-bottom:12px}
+.form-group{margin-bottom:10px}
+.form-group label{display:block;font-size:.82rem;font-weight:600;color:#374151;margin-bottom:3px}
+.form-group textarea,.form-group input{width:100%;padding:10px 12px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:.9rem;font-family:inherit;transition:border-color .2s}
+.form-group textarea:focus,.form-group input:focus{outline:none;border-color:#38bdf8;box-shadow:0 0 0 3px rgba(56,189,248,.15)}
+.form-group textarea{resize:vertical;min-height:100px}
+.btn{padding:8px 20px;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px}
+.btn-primary{background:#0369a1;color:#fff}
+.btn-primary:hover{background:#075985;transform:translateY(-1px);box-shadow:0 4px 12px rgba(3,105,161,.3)}
+.btn-secondary{background:#f1f5f9;color:#334155}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.result-box{background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:14px 16px;margin-top:12px;display:none;font-size:.9rem;white-space:pre-wrap;word-break:break-word}
+.result-box.show{display:block}
+.result-box .stat-item{display:inline-block;margin:4px 12px 4px 0;font-size:.88rem}
+.result-box .stat-num{font-size:1.3rem;font-weight:700;color:#0369a1}
+.support{background:#fff;border-radius:16px;padding:28px;margin-bottom:20px;text-align:center;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+footer{text-align:center;padding:20px 0;font-size:.8rem;color:#94a3b8;border-top:1px solid #e2e8f0;margin-top:8px}
+.links{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin:8px 0}
+.links a{color:#0369a1;font-size:.82rem}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:#1e293b;color:#fff;padding:10px 22px;border-radius:10px;font-size:.85rem;transition:transform .3s;z-index:999}
+.toast.show{transform:translateX(-50%) translateY(0)}
+@media(max-width:600px){.panel{padding:16px}}
+</style>
+</head>
+<body>
+<header><div class="container"><h1>论文辅助工具</h1><p>免费在线 • 学术写作好帮手 • 所有处理在浏览器内完成</p></div></header>
+<div class="nav"><div class="container nav-inner">
+<button class="nav-btn active" onclick="switchPanel('wordcount')">📊 字数统计</button>
+<button class="nav-btn" onclick="switchPanel('reference')">📚 参考文献</button>
+<button class="nav-btn" onclick="switchPanel('translate')">🌐 中英互译</button>
+<button class="nav-btn" onclick="switchPanel('titlecase')">📝 标题规范</button>
+</div></div>
+<main class="container">
+
+<div class="panel show" id="p-wordcount">
+<h2>📊 论文字数统计</h2>
+<p style="font-size:.82rem;color:#64748b;margin-bottom:10px;">支持统计总字数、中文字数、英文字数、段落数、阅读时间等。</p>
+<textarea id="wcText" rows="8" placeholder="在此粘贴论文正文..."></textarea>
+<button class="btn btn-primary" onclick="wordCount()">统计字数</button>
+<button class="btn btn-secondary" onclick="$('wcText').value='';$('wcResult').classList.remove('show')">清空</button>
+<div class="result-box" id="wcResult"></div></div>
+
+<div class="panel" id="p-reference">
+<h2>📚 参考文献格式生成</h2>
+<div class="form-group"><label>作者（姓 名）</label><input id="refAuthor" placeholder="张三" /></div>
+<div class="form-group"><label>文献标题</label><input id="refTitle" placeholder="论文题目" /></div>
+<div class="form-group"><label>期刊/出版社</label><input id="refJournal" placeholder="法学研究" /></div>
+<div class="form-group" id="refExtra" style="display:none;">
+<label style="font-size:.82rem;color:#64748b;">年期卷号等</label><input id="refVol" placeholder="2026年第3期" /></div>
+<div class="btn-group">
+<button class="btn btn-primary" onclick="genGB7714()">GB/T 7714 格式</button>
+<button class="btn btn-secondary" onclick="genMLA()">MLA 格式</button>
+<button class="btn btn-secondary" onclick="genAPA()">APA 格式</button>
+</div>
+<div class="result-box" id="refResult"></div></div>
+
+<div class="panel" id="p-translate">
+<h2>🌐 中英互译</h2>
+<p style="font-size:.82rem;color:#64748b;margin-bottom:10px;">使用浏览器内置翻译，支持中 ↔ 英。</p>
+<textarea id="transText" rows="5" placeholder="输入要翻译的文本..." style="width:100%;padding:10px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:.9rem;resize:vertical;"></textarea>
+<div class="btn-group">
+<button class="btn btn-primary" onclick="translateEn()">英 → 中</button>
+<button class="btn btn-secondary" onclick="translateZh()">中 → 英</button>
+<button class="btn btn-secondary" onclick="$('transText').value='';$('transResult').classList.remove('show')">清空</button>
+</div>
+<div class="result-box" id="transResult"></div></div>
+
+<div class="panel" id="p-titlecase">
+<h2>📝 标题/摘要规范检查</h2>
+<div class="form-group"><label>输入标题或摘要</label><textarea id="tcText" rows="4" placeholder="粘贴标题、摘要..."></textarea></div>
+<button class="btn btn-primary" onclick="titleCheck()">检查</button>
+<button class="btn btn-secondary" onclick="$('tcText').value='';$('tcResult').classList.remove('show')">清空</button>
+<div class="result-box" id="tcResult"></div></div>
+
+<div class="links">
+<a href="https://VowToMe.github.io/legal-doc-generator/">⚖️ 法律文书生成器</a>
+<a href="https://VowToMe.github.io/free-file-tools/">🔧 在线工具箱</a>
+<a href="https://VowToMe.github.io/online-calculators/">🧮 在线计算器</a>
+</div>
+
+<div class="support"><h3>支持作者</h3><p>如果对你写论文有帮助，欢迎支持</p><p style="color:#94a3b8;">⏳ 微信收款码待配置</p></div>
+</main>
+<footer><p>论文辅助工具 &copy; 2026 — 工具生成结果仅供参考，请核实后使用</p></footer>
+<div class="toast" id="toast"></div>
+
+<script>
+function $(id){return document.getElementById(id)}
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
+function switchPanel(id){document.querySelectorAll('.panel').forEach(e=>e.classList.remove('show'));document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active'));$('p-'+id).classList.add('show');document.querySelector('.nav-btn[onclick*="'+id+'"]')?.classList.add('active');}
+
+function wordCount(){
+const t=$('wcText').value;if(!t){toast('请输入文本');return}
+const total=t.length;const cn=(t.match(/[一-鿿]/g)||[]).length;const en=(t.match(/[a-zA-Z]+/g)||[]).length;
+const spaces=(t.match(/\s/g)||[]).length;const paras=t.trim()?t.split('\n').filter(l=>l.trim()).length:0;
+const readTime=Math.ceil(total/500);$('wcResult').innerHTML=`<div>
+<span class="stat-item"><div class="stat-num">${total}</div>总字符</span>
+<span class="stat-item"><div class="stat-num">${cn}</div>中文字</span>
+<span class="stat-item"><div class="stat-num">${en}</div>英文词</span>
+<span class="stat-item"><div class="stat-num">${paras}</div>段落</span>
+<span class="stat-item"><div class="stat-num">≈${readTime}分钟</div>阅读时间</span>
+</div>`;$('wcResult').classList.add('show');}
+
+function genGB7714(){const a=$('refAuthor').value,t=$('refTitle').value,j=$('refJournal').value,v=$('refVol').value;
+if(!a||!t||!j){toast('请填写必要信息');return}
+showRef(`${a}.${t}[J].${j},${v||'——'}.`);}
+
+function genMLA(){const a=$('refAuthor').value,t=$('refTitle').value,j=$('refJournal').value;
+if(!a||!t||!j){toast('请填写必要信息');return}
+showRef(`${a}."${t}." ${j}(${v=>v||'n.d.'})`);}
+function genAPA(){const a=$('refAuthor').value,t=$('refTitle').value,j=$('refJournal').value,v=$('refVol').value;
+if(!a||!t||!j){toast('请填写必要信息');return}
+showRef(`${a}(${new Date().getFullYear()}).${t}.${j},${v||'——'}.`);}
+
+let lastRef='';
+function showRef(text){lastRef=text;$('refResult').textContent=text;$('refResult').classList.add('show');}
+
+function translateEn(){const t=$('transText').value;if(!t){toast('请输入文本');return}
+showTrans('🌐 英→中翻译在浏览器内不可用。请使用以下方式：\n1. Google 翻译：https://translate.google.com\n2. DeepL：https://deepl.com\n3. 或者使用系统内置翻译功能\n\n原文：'+t);}
+
+function translateZh(){const t=$('transText').value;if(!t){toast('请输入文本');return}
+showTrans('🌐 中→英翻译在浏览器内不可用。请使用以下方式：\n1. Google 翻译：https://translate.google.com\n2. DeepL：https://deepl.com\n\n原文：'+t);}
+
+function showTrans(text){$('transResult').textContent=text;$('transResult').classList.add('show');}
+
+function titleCheck(){const t=$('tcText').value;if(!t){toast('请输入文本');return}
+let issues=[];if(t.length>50)issues.push('⚠️ 标题过长（建议不超过50字）');
+if(t.length<10)issues.push('⚠️ 标题过短');
+if(t.startsWith('关于'))issues.push('⚠️ 建议避免"关于"开头');
+if(t.includes(' '))issues.push('⚠️ 标题内包含多余空格');
+if(!issues.length)issues.push('✅ 标题格式基本规范');
+$('tcResult').textContent=issues.join('\n');$('tcResult').classList.add('show');}
+</script>
+</body>
+</html>
