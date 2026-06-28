@@ -58,7 +58,7 @@ footer{text-align:center;padding:20px 0;font-size:.8rem;color:#94a3b8;border-top
 <p style="font-size:.82rem;color:#64748b;margin-bottom:10px;">支持统计总字数、中文字数、英文字数、段落数、阅读时间等。</p>
 <textarea id="wcText" rows="8" placeholder="在此粘贴论文正文..."></textarea>
 <button class="btn btn-primary" onclick="wordCount()">统计字数</button>
-<button class="btn btn-secondary" onclick="$('wcText').value='';$('wcResult').classList.remove('show')">清空</button>
+<button class="btn btn-secondary" onclick="wcClear()">清空</button>
 <div class="result-box" id="wcResult"></div></div>
 
 <div class="panel" id="p-reference">
@@ -66,12 +66,11 @@ footer{text-align:center;padding:20px 0;font-size:.8rem;color:#94a3b8;border-top
 <div class="form-group"><label>作者（姓 名）</label><input id="refAuthor" placeholder="张三" /></div>
 <div class="form-group"><label>文献标题</label><input id="refTitle" placeholder="论文题目" /></div>
 <div class="form-group"><label>期刊/出版社</label><input id="refJournal" placeholder="法学研究" /></div>
-<div class="form-group" id="refExtra" style="display:none;">
-<label style="font-size:.82rem;color:#64748b;">年期卷号等</label><input id="refVol" placeholder="2026年第3期" /></div>
+<div class="form-group"><label style="font-size:.82rem;color:#64748b;">年期卷号等</label><input id="refVol" placeholder="2026年第3期" /></div>
 <div class="btn-group">
-<button class="btn btn-primary" onclick="genGB7714()">GB/T 7714 格式</button>
-<button class="btn btn-secondary" onclick="genMLA()">MLA 格式</button>
-<button class="btn btn-secondary" onclick="genAPA()">APA 格式</button>
+<button class="btn btn-primary" onclick="genGB7714()">GB/T 7714</button>
+<button class="btn btn-secondary" onclick="genMLA()">MLA</button>
+<button class="btn btn-secondary" onclick="genAPA()">APA</button>
 </div>
 <div class="result-box" id="refResult"></div></div>
 
@@ -82,7 +81,7 @@ footer{text-align:center;padding:20px 0;font-size:.8rem;color:#94a3b8;border-top
 <div class="btn-group">
 <button class="btn btn-primary" onclick="translateEn()">英 → 中</button>
 <button class="btn btn-secondary" onclick="translateZh()">中 → 英</button>
-<button class="btn btn-secondary" onclick="$('transText').value='';$('transResult').classList.remove('show')">清空</button>
+<button class="btn btn-secondary" onclick="transClear()">清空</button>
 </div>
 <div class="result-box" id="transResult"></div></div>
 
@@ -90,7 +89,7 @@ footer{text-align:center;padding:20px 0;font-size:.8rem;color:#94a3b8;border-top
 <h2>📝 标题/摘要规范检查</h2>
 <div class="form-group"><label>输入标题或摘要</label><textarea id="tcText" rows="4" placeholder="粘贴标题、摘要..."></textarea></div>
 <button class="btn btn-primary" onclick="titleCheck()">检查</button>
-<button class="btn btn-secondary" onclick="$('tcText').value='';$('tcResult').classList.remove('show')">清空</button>
+<button class="btn btn-secondary" onclick="tcClear()">清空</button>
 <div class="result-box" id="tcResult"></div></div>
 
 <div class="links">
@@ -100,7 +99,7 @@ footer{text-align:center;padding:20px 0;font-size:.8rem;color:#94a3b8;border-top
 </div>
 
 <div class="support"><h3>支持作者</h3><p>如果对你写论文有帮助，欢迎支持</p>
-<img src="https://raw.githubusercontent.com/VowToMe/paper-helper/main/pay-qr-placeholder.svg" alt="微信收款码" style="max-width:200px;border-radius:12px;" />
+<img src="https://raw.githubusercontent.com/VowToMe/paper-helper/main/9db9edcb6a182f3e9f97c76c7c0d247f.jpg" alt="微信收款码" style="max-width:200px;border-radius:12px;" />
 <p>微信扫码支持，<strong>感谢你的支持</strong></p></div>
 </main>
 <footer><p>论文辅助工具 &copy; 2026 — 工具生成结果仅供参考，请核实后使用</p></footer>
@@ -109,41 +108,17 @@ footer{text-align:center;padding:20px 0;font-size:.8rem;color:#94a3b8;border-top
 <script>
 function $(id){return document.getElementById(id)}
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
-function switchPanel(id){document.querySelectorAll('.panel').forEach(e=>e.classList.remove('show'));document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active'));$('p-'+id).classList.add('show');document.querySelector('.nav-btn[onclick*="'+id+'"]')?.classList.add('active');}
-function wordCount(){
-const t=$('wcText').value;if(!t){toast('请输入文本');return}
-const total=t.length;const cn=(t.match(/[一-鿿]/g)||[]).length;const en=(t.match(/[a-zA-Z]+/g)||[]).length;
-const spaces=(t.match(/\s/g)||[]).length;const paras=t.trim()?t.split('\n').filter(l=>l.trim()).length:0;
-const readTime=Math.ceil(total/500);$('wcResult').innerHTML=`<div>
-<span class="stat-item"><div class="stat-num">${total}</div>总字符</span>
-<span class="stat-item"><div class="stat-num">${cn}</div>中文字</span>
-<span class="stat-item"><div class="stat-num">${en}</div>英文词</span>
-<span class="stat-item"><div class="stat-num">${paras}</div>段落</span>
-<span class="stat-item"><div class="stat-num">≈${readTime}分钟</div>阅读时间</span>
-</div>`;$('wcResult').classList.add('show');}
-function genGB7714(){const a=$('refAuthor').value,t=$('refTitle').value,j=$('refJournal').value,v=$('refVol').value;
-if(!a||!t||!j){toast('请填写必要信息');return}
-showRef(`${a}.${t}[J].${j},${v||'——'}.`);}
-function genMLA(){const a=$('refAuthor').value,t=$('refTitle').value,j=$('refJournal').value;
-if(!a||!t||!j){toast('请填写必要信息');return}
-showRef(`${a}."${t}." ${j}(${v=>v||'n.d.'})`);}
-function genAPA(){const a=$('refAuthor').value,t=$('refTitle').value,j=$('refJournal').value,v=$('refVol').value;
-if(!a||!t||!j){toast('请填写必要信息');return}
-showRef(`${a}(${new Date().getFullYear()}).${t}.${j},${v||'——'}.`);}
-let lastRef='';
-function showRef(text){lastRef=text;$('refResult').textContent=text;$('refResult').classList.add('show');}
-function translateEn(){const t=$('transText').value;if(!t){toast('请输入文本');return}
-showTrans('🌐 英→中翻译在浏览器内不可用。请使用以下方式：\n1. Google 翻译：https://translate.google.com\n2. DeepL：https://deepl.com\n3. 或者使用系统内置翻译功能\n\n原文：'+t);}
-function translateZh(){const t=$('transText').value;if(!t){toast('请输入文本');return}
-showTrans('🌐 中→英翻译在浏览器内不可用。请使用以下方式：\n1. Google 翻译：https://translate.google.com\n2. DeepL：https://deepl.com\n\n原文：'+t);}
-function showTrans(text){$('transResult').textContent=text;$('transResult').classList.add('show');}
-function titleCheck(){const t=$('tcText').value;if(!t){toast('请输入文本');return}
-let issues=[];if(t.length>50)issues.push('⚠️ 标题过长（建议不超过50字）');
-if(t.length<10)issues.push('⚠️ 标题过短');
-if(t.startsWith('关于'))issues.push('⚠️ 建议避免"关于"开头');
-if(t.includes(' '))issues.push('⚠️ 标题内包含多余空格');
-if(!issues.length)issues.push('✅ 标题格式基本规范');
-$('tcResult').textContent=issues.join('\n');$('tcResult').classList.add('show');}
+function switchPanel(id){document.querySelectorAll('.panel').forEach(e=>e.classList.remove('show'));document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active'));$('p-'+id).classList.add('show');}
+function wordCount(){const t=$('wcText').value;if(!t){toast('请输入文本');return}const total=t.length,cn=(t.match(/[一-鿿]/g)||[]).length,en=(t.match(/[a-zA-Z]+/g)||[]).length,paras=t.trim()?t.split('\n').filter(l=>l.trim()).length:0,readTime=Math.ceil(total/500);$('wcResult').innerHTML=`<div><span class="stat-item"><div class="stat-num">${total}</div>总字符</span><span class="stat-item"><div class="stat-num">${cn}</div>中文字</span><span class="stat-item"><div class="stat-num">${en}</div>英文词</span><span class="stat-item"><div class="stat-num">${paras}</div>段落</span><span class="stat-item"><div class="stat-num">≈${readTime}分钟</div>阅读时间</span></div>`;$('wcResult').classList.add('show');}
+function wcClear(){$('wcText').value='';$('wcResult').classList.remove('show');}
+function genGB7714(){const a=$('refAuthor').value,t=$('refTitle').value,j=$('refJournal').value,v=$('refVol').value;if(!a||!t||!j){toast('请填写必要信息');return}$('refResult').textContent=`${a}.${t}[J].${j},${v||'——'}.`;$('refResult').classList.add('show');}
+function genMLA(){const a=$('refAuthor').value,t=$('refTitle').value,j=$('refJournal').value;if(!a||!t||!j){toast('请填写必要信息');return}$('refResult').textContent=`${a}."${t}." ${j}.`;$('refResult').classList.add('show');}
+function genAPA(){const a=$('refAuthor').value,t=$('refTitle').value,j=$('refJournal').value,v=$('refVol').value;if(!a||!t||!j){toast('请填写必要信息');return}$('refResult').textContent=`${a}(${new Date().getFullYear()}).${t}.${j},${v||'——'}.`;$('refResult').classList.add('show');}
+function translateEn(){const t=$('transText').value;if(!t){toast('请输入文本');return}$('transResult').textContent='🌐 英→中翻译请使用 Google 翻译 https://translate.google.com 或 DeepL https://deepl.com\n\n原文：'+t;$('transResult').classList.add('show');}
+function translateZh(){const t=$('transText').value;if(!t){toast('请输入文本');return}$('transResult').textContent='🌐 中→英翻译请使用 Google 翻译 https://translate.google.com 或 DeepL https://deepl.com\n\n原文：'+t;$('transResult').classList.add('show');}
+function transClear(){$('transText').value='';$('transResult').classList.remove('show');}
+function titleCheck(){const t=$('tcText').value;if(!t){toast('请输入文本');return}let issues=[];if(t.length>50)issues.push('⚠️ 标题过长');if(t.length<10)issues.push('⚠️ 标题过短');if(t.startsWith('关于'))issues.push('⚠️ 建议避免"关于"开头');if(t.includes(' '))issues.push('⚠️ 标题内包含多余空格');if(!issues.length)issues.push('✅ 标题格式基本规范');$('tcResult').textContent=issues.join('\n');$('tcResult').classList.add('show');}
+function tcClear(){$('tcText').value='';$('tcResult').classList.remove('show');}
 </script>
 </body>
 </html>
