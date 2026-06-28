@@ -99,7 +99,9 @@ footer{text-align:center;padding:20px 0;font-size:.8rem;color:#94a3b8;border-top
 <a href="https://VowToMe.github.io/online-calculators/">🧮 在线计算器</a>
 </div>
 
-<div class="support"><h3>支持作者</h3><p>如果对你写论文有帮助，欢迎支持</p><p style="color:#94a3b8;">⏳ 微信收款码待配置</p></div>
+<div class="support"><h3>支持作者</h3><p>如果对你写论文有帮助，欢迎支持</p>
+<img src="https://raw.githubusercontent.com/VowToMe/paper-helper/main/pay-qr-placeholder.svg" alt="微信收款码" style="max-width:200px;border-radius:12px;" />
+<p>微信扫码支持，<strong>感谢你的支持</strong></p></div>
 </main>
 <footer><p>论文辅助工具 &copy; 2026 — 工具生成结果仅供参考，请核实后使用</p></footer>
 <div class="toast" id="toast"></div>
@@ -108,7 +110,6 @@ footer{text-align:center;padding:20px 0;font-size:.8rem;color:#94a3b8;border-top
 function $(id){return document.getElementById(id)}
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 function switchPanel(id){document.querySelectorAll('.panel').forEach(e=>e.classList.remove('show'));document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active'));$('p-'+id).classList.add('show');document.querySelector('.nav-btn[onclick*="'+id+'"]')?.classList.add('active');}
-
 function wordCount(){
 const t=$('wcText').value;if(!t){toast('请输入文本');return}
 const total=t.length;const cn=(t.match(/[一-鿿]/g)||[]).length;const en=(t.match(/[a-zA-Z]+/g)||[]).length;
@@ -120,29 +121,22 @@ const readTime=Math.ceil(total/500);$('wcResult').innerHTML=`<div>
 <span class="stat-item"><div class="stat-num">${paras}</div>段落</span>
 <span class="stat-item"><div class="stat-num">≈${readTime}分钟</div>阅读时间</span>
 </div>`;$('wcResult').classList.add('show');}
-
 function genGB7714(){const a=$('refAuthor').value,t=$('refTitle').value,j=$('refJournal').value,v=$('refVol').value;
 if(!a||!t||!j){toast('请填写必要信息');return}
 showRef(`${a}.${t}[J].${j},${v||'——'}.`);}
-
 function genMLA(){const a=$('refAuthor').value,t=$('refTitle').value,j=$('refJournal').value;
 if(!a||!t||!j){toast('请填写必要信息');return}
 showRef(`${a}."${t}." ${j}(${v=>v||'n.d.'})`);}
 function genAPA(){const a=$('refAuthor').value,t=$('refTitle').value,j=$('refJournal').value,v=$('refVol').value;
 if(!a||!t||!j){toast('请填写必要信息');return}
 showRef(`${a}(${new Date().getFullYear()}).${t}.${j},${v||'——'}.`);}
-
 let lastRef='';
 function showRef(text){lastRef=text;$('refResult').textContent=text;$('refResult').classList.add('show');}
-
 function translateEn(){const t=$('transText').value;if(!t){toast('请输入文本');return}
 showTrans('🌐 英→中翻译在浏览器内不可用。请使用以下方式：\n1. Google 翻译：https://translate.google.com\n2. DeepL：https://deepl.com\n3. 或者使用系统内置翻译功能\n\n原文：'+t);}
-
 function translateZh(){const t=$('transText').value;if(!t){toast('请输入文本');return}
 showTrans('🌐 中→英翻译在浏览器内不可用。请使用以下方式：\n1. Google 翻译：https://translate.google.com\n2. DeepL：https://deepl.com\n\n原文：'+t);}
-
 function showTrans(text){$('transResult').textContent=text;$('transResult').classList.add('show');}
-
 function titleCheck(){const t=$('tcText').value;if(!t){toast('请输入文本');return}
 let issues=[];if(t.length>50)issues.push('⚠️ 标题过长（建议不超过50字）');
 if(t.length<10)issues.push('⚠️ 标题过短');
